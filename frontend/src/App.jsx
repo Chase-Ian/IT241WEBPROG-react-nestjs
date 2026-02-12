@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
-const API = "http://localhost:3000/guestbook";
+const API = "/guestbook";
 
 export default function App() {
   const [entries, setEntries] = useState([]);
   const [form, setForm] = useState({ name: '', message: '' });
+  const [status, setStatus] = useState('');
 
   const fetchEntries = async () => {
     const res = await axios.get(API);
@@ -13,15 +14,20 @@ export default function App() {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault(); // This stops the page from refreshing
-  try {
-    await axios.post(API, form);
-    setForm({ name: '', message: '' }); // Clears the inputs
-    fetchEntries(); // Refreshes the list
-  } catch (error) {
-    console.error("Error posting to guestbook:", error);
-  }
-};
+    e.preventDefault();
+    console.log('Submitting guestbook entry', form);
+    setStatus('sending');
+    try {
+      const res = await axios.post(API, form);
+      console.log('Post response', res.data);
+      setForm({ name: '', message: '' });
+      setStatus('sent');
+      fetchEntries();
+    } catch (error) {
+      console.error('Error posting:', error);
+      setStatus('error: ' + (error?.message || 'unknown'));
+    }
+  };
 
   const deleteEntry = async (id) => {
     await axios.delete(`${API}/${id}`);
@@ -47,6 +53,7 @@ export default function App() {
         <input placeholder="Message" value={form.message} onChange={e => setForm({...form, message: e.target.value})} />
         <button type="submit">Sign Guestbook</button>
       </form>
+      {status && <div style={{ marginTop: '0.5rem' }}>Status: {status}</div>}
 
       <hr />
 
