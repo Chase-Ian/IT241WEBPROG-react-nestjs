@@ -13,11 +13,15 @@ export default function App() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault(); // This stops the page from refreshing
+  try {
     await axios.post(API, form);
-    setForm({ name: '', message: '' });
-    fetchEntries();
-  };
+    setForm({ name: '', message: '' }); // Clears the inputs
+    fetchEntries(); // Refreshes the list
+  } catch (error) {
+    console.error("Error posting to guestbook:", error);
+  }
+};
 
   const deleteEntry = async (id) => {
     await axios.delete(`${API}/${id}`);
