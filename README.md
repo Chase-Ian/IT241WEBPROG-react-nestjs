@@ -1,40 +1,88 @@
 # IT241WEBPROG-react-nestjs
 a submission to program task
 
-This is a great idea. A README.md at the root of your project is essential for documenting how this Full-Stack Monorepo actually functions.Here is a clear, professional README structure that explains the architecture and the deployment steps.📖 Full-Stack Guestbook MonorepoA modern full-stack application with a NestJS backend and a Vite/React frontend, deployed as a single unit on Vercel.🏗️ How It Works (The Architecture)This project uses a Monorepo structure, meaning both the frontend and backend live in one repository.Frontend (/frontend): A React application built with Vite. It communicates with the backend using relative paths (/guestbook).Backend (/backend): A NestJS application that handles business logic and communicates with Supabase.Vercel Routing: The root vercel.json acts as a traffic controller.Any request starting with /guestbook is routed to the NestJS Serverless Function.All other requests serve the React Static Files.
+# 🖊️ Full-Stack Guestbook Monorepo
 
-📁 Project StructurePlaintext/
-├── backend/            # NestJS API
-│   ├── src/
-│   │   ├── main.ts     # Serverless entry point
-│   │   └── ...
-│   └── package.json
-├── frontend/           # React + Vite
-│   ├── src/
-│   │   ├── App.jsx     # API calls to "/guestbook"
-│   │   └── ...
-│   └── package.json
-└── vercel.json         # Deployment & Routing config
+This project is a full-stack application featuring a **NestJS** backend and a **Vite/React** frontend, unified in a single repository for seamless deployment on **Vercel**.
 
+---
 
-🚀 Deployment Steps (Step-by-Step)
+## 🚀 Deployment Checklist
 
-1. Database Setup (Supabase)Create a project on Supabase.Create a table named guestbook with columns: id, name, message, and created_at.Go to Project Settings > API and grab your URL and service_role secret key.
+### 1. Environment Variables
+Add these to your **Vercel Project Settings**:
 
-2. Environment VariablesIn the Vercel Dashboard (under Project Settings > Environment Variables), add the following:KeyValueSUPABASE_URLYour Supabase Project URLSUPABASE_KEYYour Supabase Service Role Key
+| Key | Description |
+| :--- | :--- |
+| `SUPABASE_URL` | Your Supabase Project URL (https://...) |
+| `SUPABASE_KEY` | Your **Service Role** Secret Key |
 
-3. Vercel Configuration (vercel.json)Ensure your root vercel.json maps the paths correctly:JSON{
-  "version": 2,
-  "rewrites": [
-    { "source": "/guestbook/(.*)", "destination": "/backend/src/main.ts" },
-    { "source": "/guestbook", "destination": "/backend/src/main.ts" },
-    { "source": "/(.*)", "destination": "/frontend/$1" }
-  ]
-}
-4. Build Settings on VercelWhen importing the repo to Vercel, use these settings:Root Directory: ./Framework Preset: Other (or let it auto-detect)Build Command: cd frontend && npm install && npm run buildOutput Directory: frontend/dist🛠️ Local DevelopmentBackend:Bashcd backend
+### 2. Vercel Project Configuration
+Ensure these settings are used during import/deployment:
+* **Root Directory:** `./`
+* **Build Command:** `cd frontend && npm install && npm run build`
+* **Output Directory:** `frontend/dist`
+
+---
+
+## 🏗️ Project Architecture
+
+### **The Backend (`/backend`)**
+* **Framework:** NestJS
+* **Database:** Supabase
+* **Route:** Responds to `/guestbook`
+* **Key Feature:** Acts as a secure proxy between the frontend and Supabase.
+
+### **The Frontend (`/frontend`)**
+* **Framework:** React (Vite)
+* **API Calls:** Uses relative paths (`const API = "/guestbook"`) to avoid CORS issues.
+
+### **The Router (`vercel.json`)**
+The root configuration file directs traffic:
+1.  Requests to `/guestbook` $\rightarrow$ **NestJS**
+2.  All other requests $\rightarrow$ **React Frontend**
+
+---
+
+## 🛠️ Step-by-Step Setup
+
+### **Backend Setup**
+1.  Ensure `backend/src/main.ts` uses the `export default` handler for Vercel.
+2.  Ensure `GuestbookController` is decorated with `@Controller('guestbook')`.
+
+### **Frontend Setup**
+1.  In `frontend/src/App.jsx`, ensure the API variable is relative:
+    ```javascript
+    const API = "/guestbook";
+    ```
+
+### **Database Setup**
+1.  In Supabase, create a table named `guestbook`.
+2.  Columns needed: `id` (int8/uuid), `name` (text), `message` (text), `created_at` (timestamp).
+
+---
+
+## 💻 Local Development
+
+Run the backend and frontend in separate terminals:
+
+**Terminal 1 (Backend):**
+```bash
+cd backend
 npm install
 npm run start:dev
-Frontend:Bashcd frontend
+
+
+Terminal 2 (Frontend):
+
+Bash
+cd frontend
 npm install
 npm run dev
-Note: For local development, ensure the API variable in App.jsx points to http://localhost:3000/guestbook.📝 Troubleshooting404 Not Found: Check vercel.json rewrites. Ensure the path matches the @Controller('path') in NestJS.500 Internal Error: Check Vercel Logs. Usually caused by missing Environment Variables.CORS Error: Fixed by the Monorepo setup (both apps share the same domain).
+
+🛑 Troubleshooting
+500 Error: Check Vercel logs for missing SUPABASE_URL.
+
+404 Error: Verify the rewrites section in the root vercel.json matches the backend controller name.
+
+CORS Error: Ensure both apps are deployed within the same Vercel project using the monorepo structure.
