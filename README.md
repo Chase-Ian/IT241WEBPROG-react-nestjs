@@ -64,25 +64,32 @@ The root configuration file directs traffic:
 
 ## 💻 Local Development
 
-Run the backend and frontend in separate terminals:
+Run the backend and frontend in two separate terminals:
 
-**Terminal 1 (Backend):**
+**Terminal 1 – Backend:**
 ```bash
 cd backend
 npm install
 npm run start:dev
+```
 
-
-Terminal 2 (Frontend):
-
-Bash
+**Terminal 2 – Frontend:**
+```bash
 cd frontend
 npm install
 npm run dev
+```
 
-🛑 Troubleshooting
-500 Error: Check Vercel logs for missing SUPABASE_URL.
+---
 
-404 Error: Verify the rewrites section in the root vercel.json matches the backend controller name.
+## 🛑 Troubleshooting
 
-CORS Error: Ensure both apps are deployed within the same Vercel project using the monorepo structure.
+* **500 Error:** Check Vercel logs for a missing `SUPABASE_URL`.
+* **404 Error:** Verify the `rewrites` section in the root `vercel.json` matches the backend controller path (`/guestbook`).
+* **CORS Error:** Ensure both apps are deployed within the same Vercel project using the monorepo structure.
+
+---
+
+## 📄 License
+
+This project is released under the [MIT License](LICENSE) unless otherwise noted.
